@@ -127,9 +127,8 @@ The order matters: each step unlocks demoability of the next without leaving bro
 - `test/resources/application.yml` uses `spring.liquibase.enabled: true` (not Flyway).
 - **Commit:** `[AI] test: full coverage for service, scheduler, and web packages`.
 
-### Phase 11 — README polish + screen recording script (rubric: 3 %)
+### Phase 11 — README polish (rubric: 3 %)
 - Setup, architecture, AI Workflow section (mandatory under §8.2.3 of the brief), assumptions, trade-offs.
-- A short `RECORDING.md` outlining the 4-minute walkthrough so the recording stays focused.
 
 ## 4. Risks and the trade-offs I'm consciously making
 
