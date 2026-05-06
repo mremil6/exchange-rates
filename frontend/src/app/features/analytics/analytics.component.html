@@ -1,0 +1,42 @@
+<section class="card">
+  <div class="header-row">
+    <div>
+      <h2>Usage analytics</h2>
+      <p class="subtitle">Which currencies are queried most.</p>
+    </div>
+    <button type="button" (click)="refresh()">Refresh</button>
+  </div>
+
+  @let v = view();
+  @switch (v.kind) {
+    @case ('loading') { <p class="muted">Loading analytics…</p> }
+    @case ('error') { <p class="error" role="alert">{{ v.problem.detail || v.problem.title }}</p> }
+    @case ('data') {
+      @if (v.value.topCurrencies.length === 0) {
+        <p class="muted">No usage yet — make a few calculator queries first.</p>
+      } @else {
+        <div class="chart-card">
+          <h3>Top 10 currencies</h3>
+          <div class="chart-host">
+            <canvas baseChart [data]="topBarData()" [options]="topBarOptions" type="bar"></canvas>
+          </div>
+        </div>
+
+        <table class="usage-table">
+          <thead>
+            <tr><th>Currency</th><th>Total queries</th><th>Last queried</th></tr>
+          </thead>
+          <tbody>
+            @for (c of v.value.topCurrencies; track c.currency) {
+              <tr>
+                <td><strong>{{ c.currency }}</strong></td>
+                <td>{{ c.totalCount }}</td>
+                <td>{{ c.lastQueriedAt | date: 'medium' }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      }
+    }
+  }
+</section>

@@ -1,0 +1,56 @@
+<section class="card">
+  <h2>Spread-adjusted exchange rate</h2>
+  <p class="subtitle">Live data sourced from the backend; spread applied per the brief.</p>
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="grid">
+    <div class="field">
+      <label for="from">From</label>
+      <select id="from" formControlName="from">
+        @for (c of currencies; track c) { <option [value]="c">{{ c }}</option> }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="to">To</label>
+      <select id="to" formControlName="to">
+        @for (c of currencies; track c) { <option [value]="c">{{ c }}</option> }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="date">Date (optional)</label>
+      <input id="date" type="date" formControlName="date" />
+    </div>
+
+    <div class="field submit">
+      <button type="submit" [disabled]="view().kind === 'loading'">
+        {{ view().kind === 'loading' ? 'Calculating…' : 'Calculate' }}
+      </button>
+    </div>
+  </form>
+
+  @let v = view();
+  @switch (v.kind) {
+    @case ('loading') {
+      <div class="state loading">Calculating exchange rate…</div>
+    }
+    @case ('error') {
+      <div class="state error" role="alert">
+        <strong>{{ v.problem.title || 'Error' }}</strong>
+        <span>{{ v.problem.detail || 'Something went wrong.' }}</span>
+      </div>
+    }
+    @case ('data') {
+      <div class="state data">
+        <div class="rate">
+          <span class="big">{{ v.value.exchange | number: '1.4-4' }}</span>
+          <span class="muted">{{ v.value.from }} → {{ v.value.to }} on {{ v.value.date }}</span>
+        </div>
+        <div class="counters">
+          <div><label>{{ v.value.from }} queries</label><strong>{{ v.value.fromQueryCount }}</strong></div>
+          <div><label>{{ v.value.to }} queries</label><strong>{{ v.value.toQueryCount }}</strong></div>
+        </div>
+      </div>
+    }
+  }
+</section>

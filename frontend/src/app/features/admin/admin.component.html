@@ -1,0 +1,27 @@
+<section class="card">
+  <h2>Admin</h2>
+  <p class="subtitle">Manually trigger a rate fetch from Fixer.io. Safe to run at any time — existing rows are upserted, usage counters are not affected.</p>
+
+  <button type="button" (click)="triggerRefresh()" [disabled]="view().kind === 'loading'">
+    {{ view().kind === 'loading' ? 'Refreshing…' : 'Trigger rate refresh' }}
+  </button>
+
+  @let v = view();
+  @switch (v.kind) {
+    @case ('loading') {
+      <div class="state loading">Fetching latest rates from Fixer.io…</div>
+    }
+    @case ('error') {
+      <div class="state error" role="alert">
+        <strong>{{ v.problem.title || 'Error' }}</strong>
+        <span>{{ v.problem.detail || 'Something went wrong.' }}</span>
+      </div>
+    }
+    @case ('data') {
+      <div class="state success">
+        <strong>Refresh complete</strong>
+        <span>{{ v.value.rowsWritten }} rate rows written or updated.</span>
+      </div>
+    }
+  }
+</section>

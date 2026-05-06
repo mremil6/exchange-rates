@@ -1,0 +1,68 @@
+.card {
+  background: var(--surface);
+  padding: 24px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+
+  h2 { margin: 0 0 4px; }
+  .subtitle { margin: 0 0 20px; color: var(--muted); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    align-items: end;
+    margin-bottom: 20px;
+
+    @media (max-width: 720px) {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .submit button { width: 100%; }
+  }
+
+  .state {
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-top: 12px;
+
+    &.loading { background: #eef1f8; color: var(--muted); }
+    &.error {
+      background: #fdecea;
+      color: var(--danger);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    &.data {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      background: #f3faf5;
+      border: 1px solid #cdebd6;
+    }
+  }
+
+  .rate {
+    display: flex;
+    flex-direction: column;
+
+    .big {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--success);
+      font-variant-numeric: tabular-nums;
+    }
+    .muted { color: var(--muted); font-size: 13px; }
+  }
+
+  .counters {
+    display: flex;
+    gap: 24px;
+    div {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
