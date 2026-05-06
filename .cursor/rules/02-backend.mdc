@@ -1,0 +1,50 @@
+---
+description: Spring Boot backend conventions
+globs: "backend/**/*.java"
+alwaysApply: true
+---
+
+# Backend conventions
+
+## Injection & wiring
+
+- Constructor injection only. No `@Autowired` on fields. `@RequiredArgsConstructor` from Lombok is fine when all fields are `final` collaborators.
+- One `ChatClient` bean, wired in `AiConfig` to `ollamaChatModel`. Do not add a second bean or a `@ConditionalOnProperty` toggle — Ollama is the only provider.
+
+## Entities vs DTOs
+
+- Entities: JPA classes with Lombok `@Getter`/`@Setter`, `@NoArgsConstructor(access = PROTECTED)`, `@Builder`. Hibernate needs a no-arg constructor — records are not valid entities.
+- DTOs: immutable records (`*Response`, `*Request`). They live in `web/dto/` and are mapped explicitly in the service layer — never return an entity from a controller.
+
+## Persistence patterns
+
+- All custom queries use `@Query` with named parameters (`:currency`, not `?1`). See `ExchangeRateRepository` and `CurrencyUsageRepository` for examples.
+- The upsert pattern for counters is in `CurrencyUsageRepository.upsertIncrement()` — native SQL `INSERT … ON CONFLICT DO UPDATE`. Do not replace this with a find-then-save approach; it would lose atomicity under concurrent requests.
+- `@Transactional` on every service method that writes. `@Transactional(readOnly = true)` on every read. `ExchangeRateService` and `RateIngestionService` show the pattern.
+
+## Calculation
+
+- `RateCalculationService.compute()` is the single implementation of the spread-adjusted formula. `RESULT_SCALE = 10` is the canonical output scale constant — reference it, don't hardcode `10`.
+- `SpreadProvider.spreadFor(currency, baseCurrency)` returns the spread percentage for any pair. The base currency always returns `0.00`. Default for unlisted currencies is `2.75`.
+
+## Spring AI
+
+- `TrendInsightService` uses `ObjectProvider<ChatClient>` — `chatClientProvider.getIfAvailable()` can return `null` when Ollama is down. Always handle the null path with the deterministic fallback; never let a null `ChatClient` propagate as a `NullPointerException`.
+- The rate series is serialised to a compact JSON array and inlined directly in the user message. Do not describe the data in English — the LLM must read the actual numbers.
+- System prompt is a constant (`SYSTEM_PROMPT`). User message is built per-request (`USER_PROMPT_TEMPLATE`). Keep them separate.
+
+## Comments & JavaDoc
+
+- One short JavaDoc sentence per class or non-obvious method. No multi-paragraph class-level explanations, no `<ul>` design-decision lists, no `<p>` continuation blocks.
+- No inline `//` comments inside method bodies. If the WHY is non-obvious, put it in a one-line JavaDoc on the method signature.
+- No comments referencing "the brief", "the rubric", or task context — those belong in the commit message.
+
+## Controllers
+
+- Every controller implements an `*Api` interface from `web/api/`. The interface carries `@RequestMapping`, `@Operation`, `@Tag`, and `@ApiResponse` annotations. The controller class carries none of these — it only has `@RestController`, `@RequiredArgsConstructor`, and `@Validated`.
+- Input validation (e.g. `toDate.isBefore(fromDate)`) lives in the controller. Business logic lives in the service.
+
+## Logging
+
+- SLF4J `Logger` only. No `System.out`. Parameterised messages: `log.info("ingested {} rates", n)` — never string concatenation.
+- `log.warn(...)` for recoverable external failures (Fixer returning non-OK, LLM unavailable). `log.error(...)` only for unhandled exceptions in `GlobalExceptionHandler`.

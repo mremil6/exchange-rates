@@ -1,0 +1,46 @@
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+  }
+
+  nav {
+    display: flex;
+    gap: 4px;
+
+    a {
+      padding: 8px 14px;
+      border-radius: var(--radius);
+      color: var(--muted);
+      transition: background 0.12s ease, color 0.12s ease;
+
+      &:hover { background: #eef1f8; text-decoration: none; }
+      &.active { background: var(--primary); color: #fff; }
+    }
+  }
+}
+
+.app-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}

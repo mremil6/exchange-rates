@@ -1,0 +1,35 @@
+# --- Java / Maven ---
+target/
+*.class
+*.jar
+*.war
+*.ear
+.mvn/wrapper/maven-wrapper.jar
+.factorypath
+
+# --- Node / Angular ---
+node_modules/
+dist/
+.angular/cache/
+*.log
+npm-debug.log*
+
+# --- IDE ---
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Env ---
+.env
+.env.local
+
+# --- Test reports ---
+backend/target/surefire-reports/
+frontend/coverage/

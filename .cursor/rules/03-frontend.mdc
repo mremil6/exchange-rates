@@ -1,0 +1,49 @@
+---
+description: Angular frontend conventions
+globs: "frontend/**/*.{ts,html,scss}"
+alwaysApply: true
+---
+
+# Frontend conventions
+
+## Component architecture
+
+- Standalone components only. No `NgModule` files — no exceptions.
+- File naming: `kebab-case.component.{ts,html,scss}`. Each component gets its own directory under `src/app/features/<name>/`.
+- When adding a new route, three files change together in one session: the component itself, `app.routes.ts` (lazy `loadComponent`), and the nav link in `app.component.html`. The Admin tab addition demonstrates this — all three were wired in the same change. Partial wiring leaves a broken nav or a 404.
+
+## View-state pattern — the only allowed async pattern
+
+- `shared/view-state.ts` defines `ViewState<T>` — a discriminated union of `idle | loading | data | error`. Every feature component that makes an API call holds `signal<ViewState<T>>(idle())`.
+- Initialise with `idle()` when the component has a trigger (button click, form submit). Initialise with `loading()` and fire immediately in `ngOnInit` when the data loads automatically.
+- The template must render all four states explicitly. No flash of empty UI, no silent null.
+- `calculator`, `historical`, `analytics`, and `admin` components all follow this pattern — check any of them for the canonical shape.
+
+## API calls
+
+- `core/services/api.service.ts` is the only file that calls `HttpClient`. Components call `ApiService` methods only.
+- Every method in `ApiService` ends with `catchError(this.normaliseError)`. The `normaliseError` private method maps any `HttpErrorResponse` to a `ProblemDetail`-shaped error object — components never inspect raw `HttpErrorResponse`.
+- API base URL comes from `src/environments/environment.ts` (`environment.apiBaseUrl`). Never hard-code `localhost:8080` in a component or service.
+- Typed response models live in `core/models/exchange.models.ts`. Add new response shapes there — no inline interfaces in component files.
+
+## Forms
+
+- Reactive forms (`FormBuilder`, `FormGroup`) for any form with more than one field. Template-driven only if the form is a single field with no cross-field validation.
+- Built-in validators (`Validators.required`, `Validators.min`) first. Custom validators only when the built-ins can't express the constraint.
+- Cross-field validation (e.g. `toDate` must not be before `fromDate`) goes in the component class, not in a shared validator, unless the same rule is reused in two or more forms.
+
+## Styles
+
+- SCSS scoped per component (Angular's default `ViewEncapsulation.Emulated`). No bleeding styles.
+- Global resets and theme variables only in `styles.scss`. Do not add component-specific rules there.
+- **Spacing lesson (learned from historical page):** When a new card section appears immediately below a grid or chart area with no visible gap, add `margin-bottom` to the container above it — the gap does not appear automatically from the child's `margin-top` because of how block formatting contexts collapse. `.grid-two` in `historical.component.scss` had `margin-bottom: 16px` added for exactly this reason.
+
+## TypeScript
+
+- `strict: true`, `noImplicitAny`, `noUncheckedIndexedAccess` are on in `tsconfig.json`. Never introduce `any` — use `unknown` with a type guard if the shape is genuinely variable.
+- Signals for local component state (`signal<T>()`), not `BehaviorSubject` or class fields with `markForCheck`.
+
+## Charts
+
+- Charts via `ng2-charts` (Chart.js wrapper). Keep `ChartData`, `ChartOptions`, and `ChartType` declarations in the component file where the chart lives — no shared chart-config module.
+- `historical` uses a line chart; `analytics` uses a bar chart. Both component files show the full config shape.
