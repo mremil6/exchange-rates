@@ -1,0 +1,18 @@
+# Test profile — Postgres URL/credentials are injected by Testcontainers via @DynamicPropertySource.
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  liquibase:
+    enabled: true
+
+app:
+  fixer:
+    api-key: ""
+  ingestion:
+    seed-days: 0
+
+logging:
+  level:
+    org.hibernate.SQL: WARN
+    com.marcura.exchange: INFO
