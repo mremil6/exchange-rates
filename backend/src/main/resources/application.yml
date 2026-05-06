@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: exchange-rate-service
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:marcura}
+    username: ${POSTGRES_USER:postgres}
+    password: ${POSTGRES_PASSWORD:postgres}
+
+  mvc:
+    servlet:
+      path: /api
+
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Schema is owned by Liquibase, JPA must not touch it.
+    open-in-view: false           # Anti-pattern in production; close the session at the controller boundary.
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+
+  ai:
+    # spring-ai-spring-boot-autoconfigure (transitive via Ollama starter) includes OpenAI
+    # auto-configuration which validates the key at startup even when unused.
+    openai:
+      api-key: "not-used"
+    # The active provider is selected in AiConfig; only the Ollama ChatClient bean is exposed.
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:llama3.2}
+          temperature: 0.2
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+# --- App-specific ---
+app:
+  fixer:
+    base-url: ${FIXER_BASE_URL:https://data.fixer.io/api}
+    api-key: ${FIXER_API_KEY:}
+  ingestion:
+    seed-days: 30
+  cors:
+    allowed-origins: "http://localhost:4200"
+
+logging:
+  level:
+    root: INFO
+    com.marcura.exchange: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
