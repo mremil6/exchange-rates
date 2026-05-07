@@ -85,10 +85,9 @@ public class SeedDataService {
             for (Map.Entry<String, BigDecimal> e : anchorRates.entrySet()) {
                 String currency = e.getKey();
                 BigDecimal anchor = e.getValue();
-                double noise = (rng.nextGaussian() * 0.005);
-                BigDecimal rate = anchor
-                        .multiply(BigDecimal.valueOf(1 + noise))
-                        .setScale(8, RoundingMode.HALF_UP);
+                BigDecimal noiseFactor = BigDecimal.ONE.add(
+                        BigDecimal.valueOf(rng.nextGaussian()).multiply(new BigDecimal("0.005")));
+                BigDecimal rate = anchor.multiply(noiseFactor).setScale(8, RoundingMode.HALF_UP);
                 all.add(ExchangeRate.builder()
                         .currency(currency)
                         .rateDate(date)
