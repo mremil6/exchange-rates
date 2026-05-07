@@ -126,6 +126,7 @@ The order matters: each step unlocks demoability of the next without leaving bro
 - Key correction applied during test phase: `ExchangeRateServiceTest` and `ExchangeControllerIT` originally asserted `4.44` (copied from the brief's formula demo). Real `SpreadProvider` values (EUR=0% base, PLN=2.75% default) produce `4.50` for the 0.8/3.7 rate pair. Corrected to `4.50`. `RateCalculationServiceTest.workedExample` stays at `4.44` — it passes explicit spreads directly and is testing the formula, not the spread table.
 - `test/resources/application.yml` uses `spring.liquibase.enabled: true` (not Flyway).
 - **Commit:** `[AI] test: full coverage for service, scheduler, and web packages`.
+- **Angular tests** (`npm test`): Jasmine/Karma spec files for every frontend unit — `api.service.spec.ts` (HTTP params, method, error normalisation), `calculator.component.spec.ts` (form validation, same-currency guard, ViewState transitions), `historical.component.spec.ts` (date-range validation, independent chart/insight signals, `chartData` computed), `analytics.component.spec.ts` (ngOnInit load, top-10 slice, refresh), `admin.component.spec.ts` (idle/data/error states). Components that import `BaseChartDirective` are tested with `overrideComponent` + `NO_ERRORS_SCHEMA` to keep tests DOM-free. 35 specs, all green.
 
 ### Phase 11 — README polish (rubric: 3 %)
 - Setup, architecture, AI Workflow section (mandatory under §8.2.3 of the brief), assumptions, trade-offs.
@@ -147,6 +148,7 @@ The order matters: each step unlocks demoability of the next without leaving bro
 - `cd backend && ./mvnw spring-boot:run` boots the API; ingest runs immediately on first start so there's data.
 - `cd frontend && npm install && npm start` boots the SPA at `localhost:4200`.
 - All three views demo-able. Insight panel populates. Swagger reachable.
-- `./mvnw test` is green.
+- `./mvnw test` is green (68 backend tests).
+- `npm test` is green (35 Angular specs).
 - Repo has commits prefixed `[AI]` for AI-assisted work and unprefixed for manual overrides (so the override-evidence the rubric wants is real, not narrated).
 

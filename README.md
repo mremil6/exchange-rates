@@ -78,7 +78,7 @@ cd backend && ./mvnw test
 cd frontend && npm test
 ```
 
-The integration test uses Testcontainers and pulls a `postgres:16-alpine` image automatically.
+The backend integration test uses Testcontainers and pulls a `postgres:16-alpine` image automatically. The frontend suite runs 35 Jasmine specs covering `ApiService` and all four feature components (calculator, historical, analytics, admin).
 
 ---
 
