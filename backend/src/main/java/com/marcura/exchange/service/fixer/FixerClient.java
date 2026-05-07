@@ -2,6 +2,7 @@ package com.marcura.exchange.service.fixer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
@@ -22,6 +23,7 @@ public class FixerClient {
     private final RestClient restClient;
     private final String apiKey;
 
+    @Autowired
     public FixerClient(@Value("${app.fixer.base-url}") String baseUrl,
                        @Value("${app.fixer.api-key:}") String apiKey) {
         this.restClient = RestClient.builder().baseUrl(baseUrl).build();
