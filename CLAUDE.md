@@ -4,6 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## Security — read this before touching any file
+
+- **Never read, log, or reference the contents of `.env` or any file matched by `.claudeignore`** — these may contain real API keys, stage/prod database credentials, or certificates.
+- All secrets reach the app through environment variables resolved in `application.yml`. If a config value is needed, read `application.yml` or `.env.example` (safe placeholder values only).
+- If a secret accidentally appears in a tool result or shell output, do not echo, quote, or store it — treat it as ephemeral and continue.
+- Never embed credential values in commit messages, comments, or log statements.
+- When the user says "stage" or "prod", assume real credentials may be in play and apply extra caution before reading any file outside the tracked source tree.
+
+---
+
 ## Project at a glance
 
 Backend: Java 21 · Spring Boot 3.3 · Maven · Spring Data JPA · PostgreSQL 16 · Liquibase · Spring AI · ShedLock.
